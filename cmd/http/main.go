@@ -34,7 +34,7 @@ import (
 // @version        1.0
 // @description    Go RESTful API boilerplate built on net/http + PostgreSQL.
 // @host           localhost:4040
-// @BasePath       /api
+// @BasePath       /v1/api
 // @schemes        http
 func main() {
 	if err := run(); err != nil {

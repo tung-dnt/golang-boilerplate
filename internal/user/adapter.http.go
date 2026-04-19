@@ -53,7 +53,7 @@ func (m *httpAdapter) writeErr(r *http.Request, w http.ResponseWriter, err error
 //	@Summary      List users
 //	@Tags         users
 //	@Produce      json
-//	@Success      200  {array}   usermapping.UserResponse
+//	@Success      200  {array}   userResponse
 //	@Failure      500  {object}  map[string]string
 //	@Router       /users [get]
 func (m *httpAdapter) listUsersHandler(w http.ResponseWriter, r *http.Request) {
@@ -76,8 +76,8 @@ func (m *httpAdapter) listUsersHandler(w http.ResponseWriter, r *http.Request) {
 //	@Tags         users
 //	@Accept       json
 //	@Produce      json
-//	@Param        body  body      usercore.CreateUserInput  true  "User data"
-//	@Success      201   {object}  usermapping.UserResponse
+//	@Param        body  body      CreateUserRequest  true  "User data"
+//	@Success      201   {object}  userResponse
 //	@Failure      400   {object}  map[string]string
 //	@Failure      422   {object}  map[string]string
 //	@Failure      500   {object}  map[string]string
@@ -101,7 +101,7 @@ func (m *httpAdapter) createUserHandler(w http.ResponseWriter, r *http.Request) 
 //	@Tags         users
 //	@Produce      json
 //	@Param        id   path      string  true  "User ID"
-//	@Success      200  {object}  usermapping.UserResponse
+//	@Success      200  {object}  userResponse
 //	@Failure      404  {object}  map[string]string
 //	@Failure      500  {object}  map[string]string
 //	@Router       /users/{id} [get]
@@ -121,8 +121,8 @@ func (m *httpAdapter) getUserByIDHandler(w http.ResponseWriter, r *http.Request)
 //	@Accept       json
 //	@Produce      json
 //	@Param        id    path      string                   true  "User ID"
-//	@Param        body  body      usercore.UpdateUserInput true  "User data"
-//	@Success      200   {object}  usermapping.UserResponse
+//	@Param        body  body      UpdateUserRequest true  "User data"
+//	@Success      200   {object}  userResponse
 //	@Failure      400   {object}  map[string]string
 //	@Failure      404   {object}  map[string]string
 //	@Failure      500   {object}  map[string]string
