@@ -40,6 +40,36 @@ func (m *mockQuerier) GetUserByID(ctx context.Context, id string) (pgdb.User, er
 	return args.Get(0).(pgdb.User), args.Error(1)
 }
 
+func (m *mockQuerier) CreateTask(ctx context.Context, arg pgdb.CreateTaskParams) (pgdb.Task, error) {
+	args := m.Called(ctx, arg)
+	return args.Get(0).(pgdb.Task), args.Error(1)
+}
+
+func (m *mockQuerier) UpdateTask(ctx context.Context, arg pgdb.UpdateTaskParams) (pgdb.Task, error) {
+	args := m.Called(ctx, arg)
+	return args.Get(0).(pgdb.Task), args.Error(1)
+}
+
+func (m *mockQuerier) DeleteTask(ctx context.Context, id string) (pgconn.CommandTag, error) {
+	args := m.Called(ctx, id)
+	return args.Get(0).(pgconn.CommandTag), args.Error(1)
+}
+
+func (m *mockQuerier) ListTasks(ctx context.Context, arg pgdb.ListTasksParams) ([]pgdb.Task, error) {
+	args := m.Called(ctx, arg)
+	return args.Get(0).([]pgdb.Task), args.Error(1)
+}
+
+func (m *mockQuerier) GetTaskByID(ctx context.Context, id string) (pgdb.Task, error) {
+	args := m.Called(ctx, id)
+	return args.Get(0).(pgdb.Task), args.Error(1)
+}
+
+func (m *mockQuerier) GetTaskByVaultPath(ctx context.Context, vaultPath string) (pgdb.Task, error) {
+	args := m.Called(ctx, vaultPath)
+	return args.Get(0).(pgdb.Task), args.Error(1)
+}
+
 type mockUserSvc struct {
 	mock.Mock
 }

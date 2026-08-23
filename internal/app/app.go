@@ -3,7 +3,6 @@
 package app
 
 import (
-	"github.com/firebase/genkit/go/genkit"
 	"go.opentelemetry.io/otel/trace"
 
 	pgdb "gokit/pkg/postgres/db"
@@ -22,5 +21,4 @@ type App struct {
 	Queries   *pgdb.Queries
 	Validator Validator
 	Tracer    trace.TracerProvider
-	Agent     *genkit.Genkit
 }

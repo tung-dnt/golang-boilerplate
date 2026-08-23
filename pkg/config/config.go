@@ -16,6 +16,7 @@ type Config struct {
 	Server      ServerConfig
 	LogFormat   string
 	DatabaseURL string
+	VaultPath   string
 }
 
 // ServerConfig holds HTTP server configuration.
@@ -33,6 +34,7 @@ func Load(getenv func(string) string) *Config {
 	return &Config{
 		LogFormat:   getEnv(getenv, "LOG_FORMAT", "json"),
 		DatabaseURL: getEnv(getenv, "DATABASE_URL", "postgres://postgres:postgres@localhost:5432/postgres?sslmode=disable"),
+		VaultPath:   getEnv(getenv, "VAULT_PATH", "/Users/tung-dnt/Library/Mobile Documents/iCloud~md~obsidian/Documents/Personal"),
 		Server: ServerConfig{
 			Host:         getEnv(getenv, "SERVER_HOST", "0.0.0.0"),
 			Port:         getEnv(getenv, "SERVER_PORT", "4040"),

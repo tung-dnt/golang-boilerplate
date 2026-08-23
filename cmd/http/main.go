@@ -3,6 +3,13 @@ package main
 import (
 	"context"
 	"fmt"
+	"gokit/internal/app"
+	"gokit/internal/user"
+	"gokit/pkg/config"
+	"gokit/pkg/logger"
+	"gokit/pkg/postgres"
+	"gokit/pkg/recovery"
+	"gokit/pkg/telemetry"
 	"log/slog"
 	"net"
 	"net/http"
@@ -10,23 +17,15 @@ import (
 	"os/signal"
 	"time"
 
-	"github.com/firebase/genkit/go/genkit"
-	"github.com/firebase/genkit/go/plugins/googlegenai"
 	httpSwagger "github.com/swaggo/http-swagger/v2"
-	opentelemetry "github.com/xavidop/genkit-opentelemetry-go"
 	"go.opentelemetry.io/otel"
 
 	_ "gokit/docs"
-	"gokit/internal/app"
-	"gokit/internal/recipe"
-	"gokit/internal/user"
-	"gokit/pkg/config"
+
 	router "gokit/pkg/http"
-	"gokit/pkg/logger"
-	"gokit/pkg/postgres"
+
 	pgdb "gokit/pkg/postgres/db"
-	"gokit/pkg/recovery"
-	"gokit/pkg/telemetry"
+
 	cv "gokit/pkg/validator"
 )
 
@@ -56,22 +55,6 @@ func run() error {
 	}
 	defer stopTelemetry()
 
-	// Genkit OTEL plugin — exports Genkit-internal spans (LLM calls, embeddings,
-	// retrieval, flows) via OTLP alongside the app's own spans.
-	otelPlugin := opentelemetry.New(opentelemetry.Config{
-		ServiceName:    "gokit",
-		ForceExport:    true,
-		OTLPEndpoint:   telemetry.EndpointHTTP(),
-		OTLPUseHTTP:    true,
-		MetricInterval: 15 * time.Second,
-	})
-
-	ai := genkit.Init(ctx,
-		genkit.WithPlugins(&googlegenai.GoogleAI{}, otelPlugin),
-		genkit.WithDefaultModel("googleai/gemini-2.5-flash"),
-		genkit.WithPromptDir("./prompts"),
-	)
-
 	pool, err := postgres.OpenDB(ctx, cfg.DatabaseURL)
 	if err != nil {
 		return fmt.Errorf("open database: %w", err)
@@ -82,14 +65,12 @@ func run() error {
 		Queries:   pgdb.New(pool),
 		Validator: cv.New(),
 		Tracer:    otel.GetTracerProvider(),
-		Agent:     ai,
 	}
 
 	r := router.NewRouter(router.WithInstrumentation("http.server"))
 	r.Use(logger.Middleware)
 	r.Use(recovery.Middleware)
 
-	recipeMod, err := recipe.NewModule(a)
 	if err != nil {
 		return fmt.Errorf("recipe module: %w", err)
 	}
@@ -98,9 +79,6 @@ func run() error {
 		g.Prefix("/api")
 		g.ANY("/swagger/", httpSwagger.WrapHandler)
 		g.Group("/users", user.NewModule(a).RegisterRoutes)
-		g.Group("/agents", func(g *router.Group) {
-			g.Group("/recipes", recipeMod.RegisterRoutes)
-		})
 	})
 
 	addr := net.JoinHostPort(cfg.Server.Host, cfg.Server.Port)
